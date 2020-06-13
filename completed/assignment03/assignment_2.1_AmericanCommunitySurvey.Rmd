@@ -1,0 +1,129 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```yaml
+---
+title: "ASSIGNMENT 2.1_AmericanCommunitySurvey"
+author: "Bhushan Suryawanshi"
+date: '2020-06-10'
+output:
+  html_document: default
+---
+```
+This is your second exercise with real data. This time, instead of a bank of test scores, we will use the 2014 American Community Survey. These data are maintained by the US Census Bureau and are designed to show how communities are changing.
+
+Through asking questions of a sample of the population, it produces national data on more than 35 categories of information, such as education, income, housing, and employment.
+
+For this assignment, you will need to load and activate the ggplot2 package. (I urge you to do the DataCamp exercise first!). For this deliverable, you should provide the following:
+
+1. What are the elements in your data (including the categories and data types)?
+
+```{r}
+      acs_df <- read.csv("acs-14-1yr-s0201.csv", stringsAsFactors = FALSE)
+      head(acs_df)
+      sapply(acs_df, class)
+```
+
+Answer - Head shows the sample data in the data set. The function sapply helps to get
+datatype of the column. In this dataset we have 8 columns out of which 5 are columns are numerical data, 
+And 3 are categorical data. 
+
+2. Please provide the output from the following functions: str(); nrow(); ncol()
+```{r}
+      str(acs_df)
+      nrow(acs_df)
+      ncol(acs_df)
+      
+```
+
+Answer - Above function str also helps to get column details of the dataset.
+The function nrow() and ncol() gives number of rows and number of columns in dataset respectively.
+
+3. Create a Histogram of the HSDegree variable using the ggplot2 package.
+
+a. Set a bin size for the Histogram.
+
+b. Include a Title and appropriate X/Y axis labels on your Histogram Plot.
+
+```{r}
+      library(ggplot2)
+      bw = 5
+      n_obs = sum(!is.na(acs_df$HSDegree))
+      ggplot(acs_df, aes(HSDegree)) + geom_histogram(bins=10) + ggtitle('HSDegree vs. Count') + xlab('HSDegree') + ylab('Count') + stat_function(fun = function(x) dnorm(x, mean = mean(acs_df$HSDegree), sd = sd(acs_df$HSDegree)) * bw * n_obs  )
+      
+```
+
+
+4. Answer the following questions based on the Histogram produced:
+
+a. Based on what you see in this histogram, is the data distribution unimodal?
+
+b. Is it approximately symmetrical?
+
+c. Is it approximately bell-shaped?
+
+d. Is it approximately normal?
+
+e. If not normal, is the distribution skewed? If so, in which direction?
+
+f. Include a normal curve to the Histogram that you plotted.
+
+g. Explain whether a normal distribution can accurately be used as a model for this data.
+
+Answer - A unimodal distribution is a distribution with one clear peak or most frequent value.
+Based on the above histogram we can see that the data shown is unimodel but not normally distributed. 
+It is negatively skewed distribution. 
+
+5. Create a Probability Plot of the HSDegree variable.
+
+```{r}
+    ggplot(acs_df, aes(HSDegree)) +  geom_density()
+```
+
+6. Answer the following questions based on the Probability Plot:
+
+
+```{r}
+   summary(acs_df$HSDegree)
+```
+a. Based on what you see in this probability plot, is the distribution approximately normal? Explain how you know.
+
+Answer - Based on probability distribution we can say the distribution is approximately normal because
+more than 60% of the data is near the mean of the distribution. Also we can observe data between 1st and 3rd quartile
+it is approximately more than 60%. 
+
+b. If not normal, is the distribution skewed? If so, in which direction? Explain how you know.
+
+Answer - The data is not exactly normal but negatively skewed because mean is less than median. 
+In normal distribution difference between mean and median is 0. 
+
+7. Now that you have looked at this data visually for normality, you will now quantify normality with numbers using the stat.desc() function. Include a screen capture of the results produced.
+
+```{r}
+  library(pastecs)
+  stat.desc(acs_df)
+  
+  library(e1071)  
+  skewness(acs_df$HSDegree)
+  kurtosis(acs_df$HSDegree)
+  
+  library(sqldf)
+  a <- sqldf("SELECT DISTINCT id FROM acs_df  ORDER BY RANDOM(*) LIMIT 5")
+  small_acs_df = sqldf("SELECT * FROM acs_df WHERE id IN a")
+  small_acs_df
+  skewness(small_acs_df$HSDegree)
+  kurtosis(small_acs_df$HSDegree)
+```
+
+8. In several sentences provide an explanation of the result produced for skew, kurtosis, and z-scores. In addition, explain how a change in the sample size may change your explanation?
+
+Answer - Skewness talks about lack of symmetry in the data. Where as kurtosis talks about pointiness at the end, 
+The sample size or size of data does affect the distribution. As shown in the above example we picked random 5 data 
+points from the give sample. Then we calculated skewness and kurtosis for current sample size of 136 observations. We see that if we use 
+all data then the skewness is -1.67 where as for smaller sample it shows -0.79. Same is the case with kurtosis, with 
+all data we get kurtosis 4.35 and with small sample it is -1.22, Which means sample size does affect the analysis. 
+Getting right sample size is key to data analysis. In our example if we increase sample size we may get normal curve and we have higher
+probability of having more population with HSDegree. 
