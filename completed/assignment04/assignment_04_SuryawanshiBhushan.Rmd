@@ -4,8 +4,8 @@ author: "Bhushan Suryawanshi"
 date: '2020-06-15'
 output:
   word_document: default
-  pdf_document: default
   html_document: default
+  pdf_document: default
 bibliography: bibliography.bib
 ---
 
@@ -37,8 +37,8 @@ This is a footnote.^[This is a footnote in R Markdown]
 
 ## Add Citations
 
-* R for Everyone @lander2014r
-* Discovering Statistics Using R @field2012discovering
+* R for Everyone [@lander2014r]
+* Discovering Statistics Using R [@field2012discovering]
 
 # Inline Code
 
@@ -124,4 +124,3 @@ knitr::kable(characters_df, caption = "Table 1: One Ring to Rule Them All")
 
 
 # References
-
