@@ -1,0 +1,174 @@
+---
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+bibliography: bibliography.bib
+---
+
+```yaml
+---
+title: "ASSIGNMENT 4.1_Student_Survey"
+author: "Bhushan Suryawanshi"
+date: '2020-06-22'
+
+---
+
+```
+As a data science intern with newly learned knowledge in skills in statistical correlation and R programming, you will analyze the results of a survey recently given to college students. You learn that the research question being investigated is: “Is there a significant relationship between the amount of time spent reading and the time spent watching television?” You are also interested if there are other significant relationships that can be discovered? The survey data is located in this StudentSurvey.csv file.
+
+```{r}
+
+      student_df <- read.csv("Student-Survey.csv", stringsAsFactors = FALSE)
+      head(student_df)
+      summary(student_df)
+      str(student_df)
+
+```
+
+**a. Use R to calculate the covariance of the Survey variables and provide an explanation of why you would use this calculation and what the results indicate.**
+
+```{r}
+    
+      cov(student_df)
+      
+```
+**Answer-** 
+
+>Calculating the covariance is a good way to assess whether two variables are
+related to each other. A positive covariance indicates that as one variable deviates
+from the mean, the other variable deviates in the same direction. On the other hand,
+a negative covariance indicates that as one variable deviates from the mean (e.g.,
+increases), the other deviates from the mean in the opposite direction (e.g.,
+decreases). (Ref - Discovering Statistics Using R  [@field2012discovering page 316]) 
+
+Covariance shows the variability of two variables. In the student dataset we can see that time of reading "TimeReading" is negatively impacting time watching TV ("TimeTv"). It has the covariance of -20.3637. Which means - if you read more then you get less time to watch TV or vice versa. Where as watching TV ("TimeTV") is positively impacting happiness quotient ("Happiness"). It means students watching more TV are more happy. 
+
+
+**b. Examine the Survey data variables. What measurement is being used for the variables? Explain what effect changing the measurement being used for the variables would have on the covariance calculation. Would this be a problem? Explain and provide a better alternative if needed. **
+
+
+**Answer-** 
+
+>There is, however, one problem with covariance as a measure of the
+relationship between variables and that is that it depends upon the scales of
+measurement used. So, covariance is not a standardized measure.
+(Ref. - Discovering Statistics Using R  [@field2012discovering page 316])
+
+Based on the dataset details we can see that the reading time "TimeTV" is represented in the minute format where as reading time "TimeReading" is in hour format. This makes our covariance calculation a non-standard approach. 
+
+```{r}
+    modified_df <- student_df
+    modified_df$TimeReading <- modified_df$TimeReading * 60
+    head(modified_df)
+    modified_cov <- cov(modified_df)
+    round(modified_cov, 2)
+    
+```
+
+
+Now changing measurement of "TimeReading" to minutes shows that the covariance has changed to very different values. Again if we change dataset we don't know if it will remain same. Hence we need to standardize the covariance. The covariance standardization can be done using standard deviation. Here we are looking at 2 variables and hence we have two standard deviations. So to calculate standard covariance which is also known as **Correlation Coefficient** we use -
+
+$r = \frac{COV_{xy}}{s_{x}s_{y}} = \frac{\sum(x_{i} - \overline{x}) (y_{i} - \overline{y})}{(N-1)s_{x} s_{y}}$
+
+The coefficient equation above is known as **Pearson product-moment correlation coefficient** or **Pearson correlation coefficient**
+
+
+
+**c. Choose the type of correlation test to perform, explain why you chose this test, and make a prediction if the test yields a positive or negative correlation?**
+
+**Answer-** We are using **Pearson's Correlation** test here as we want to use confidence intervals as well as our data is interval data and it makes more sense to use Pearson's Correlation test. (Ref. - Discovering Statistics Using R  [@field2012discovering page 329] )
+
+
+**d. Perform a correlation analysis of:**
+
+    1. All variables
+
+
+```{r}
+cor(student_df)    
+GGally::ggpairs(student_df)
+```
+    
+    2. A single correlation between two a pair of the variables
+
+
+```{r}
+with(student_df, cor.test(Happiness, TimeReading, 
+  alternative="two.sided", method="pearson"))
+```
+
+```{r}
+with(student_df, cor.test(Happiness, TimeTV, alternative="two.sided", 
+  method="pearson"))
+```
+
+
+```{r}
+with(student_df, cor.test(TimeReading, TimeTV, alternative="two.sided",
+   method="pearson"))
+```
+
+    
+    3. Repeat your correlation test in step 2 but set the confidence interval at 99%
+
+
+```{r}
+with(student_df, cor.test(Happiness, TimeReading, 
+  alternative="two.sided", method="pearson", conf.level = 0.99))
+```
+    
+```{r}
+with(student_df, cor.test(Happiness, TimeTV, alternative="two.sided", 
+  method="pearson", conf.level = 0.99))
+```
+
+
+```{r}
+with(student_df, cor.test(TimeReading, TimeTV, alternative="two.sided",
+   method="pearson", conf.level = 0.99))
+```
+    
+    4. Describe what the calculations in the correlation matrix suggest about the relationship between the variables. Be specific with your explanation.
+    
+**Answer-** Based on the above correlation matrix and correlation tests we can say that Happiness and Time reading are negatively related which means if students read more they are less happy. In case of Time watching TV is positively related to Happiness, where student watching TV are more happy. With reference to reading time and watching TV we see negative relation. Students watching more TV are getting less time to read. 
+
+
+**e. Calculate the correlation coefficient and the coefficient of determination, describe what you conclude about the results.**
+
+```{r}
+
+#Correlation coefficient
+cor(student_df)
+
+#Coefficient of Determination
+cor(student_df)^2 * 100
+
+```
+
+**Answer-** 
+
+>Although we cannot make direct conclusions about causality from a correlation, we
+can take the correlation coefficient a step further by squaring it. The correlation
+coefficient squared (known as the coefficient of determination, $R^{2}$) is a measure
+of the amount of variability in one variable that is shared by the other.
+(Ref. - Discovering Statistics Using R  [@field2012discovering page 334] )
+
+In our student survey example the correlation coefficient tells us that the watching TV is negatively related to reading. However we don't know how much percent of affected reading time is because of watching TV. This is where **Coefficient of Determination** comes handy. It shows us what percent of reading is affected by watching TV. So above $R^{2}$ matrix shows that the 77% of the time the reading is affected by watching TV. 
+
+
+**f. Based on your analysis can you say that watching more TV caused students to read less? Explain.**
+
+**Answer -** Based on correlation test of student survey attributes we can say reading is affected by watching TV. Also as we have seen coefficient of determination also shows as much as 77% of the time reading time is affected by watching TV. 
+
+
+**g. Pick three variables and perform a partial correlation, documenting which variable you are “controlling”. Explain how this changes your interpretation and explanation of the results.**
+
+```{r}
+library(ggm)
+pcor(c( "TimeTV", "TimeReading", "Happiness"), var(student_df))
+```
+
+**Answer-** Partial correlation analysis using TimeTv, TimeReading and Happiness shows that the time watching TV is negatively affecting reading time. Also when we keep Happiness constant doesn't affect much the relation between watching TV and reading time. With correlation test we had r = -0.88 where as with partial test we get partial correlation of -0.87.   
+
+# References:
