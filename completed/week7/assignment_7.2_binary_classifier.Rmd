@@ -1,7 +1,7 @@
 ---
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 bibliography: bibliography.bib
 ---
 
@@ -85,8 +85,6 @@ table(knn.39, test$label)
 library("caret")
 
 confusionMatrix(table(knn.39, test$label))
-
-anova(logistic_model, knn.38)
 
 ```
 

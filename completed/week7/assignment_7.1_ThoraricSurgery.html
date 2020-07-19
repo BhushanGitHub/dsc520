@@ -415,8 +415,8 @@ head(thoracic_surgery_df)</code></pre>
 <pre><code>## Warning: package &#39;caTools&#39; was built under R version 4.0.2</code></pre>
 <pre class="r"><code>split&lt;-sample.split(thoracic_surgery_df, SplitRatio=0.8)
 split</code></pre>
-<pre><code>##  [1] FALSE FALSE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
-## [13]  TRUE  TRUE  TRUE FALSE  TRUE</code></pre>
+<pre><code>##  [1] FALSE  TRUE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+## [13] FALSE  TRUE  TRUE FALSE  TRUE</code></pre>
 <pre class="r"><code>train &lt;- subset(thoracic_surgery_df, split=&quot;TRUE&quot;)
 test &lt;- subset(thoracic_surgery_df, split=&quot;FALSE&quot;)
 
