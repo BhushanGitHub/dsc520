@@ -1,0 +1,100 @@
+---
+output:
+  html_document: default
+bibliography: bibliography.bib
+---
+
+```yaml
+---
+title: "ASSIGNMENT 6.1_Housing_Data"
+author: "Bhushan Suryawanshi"
+date: '2020-07-06'
+
+---
+```
+
+
+
+Fit a logistic regression model to the binary-classifier-data.csv dataset from the previous assignment.
+
+**a. What is the accuracy of the logistic regression classifier?**
+
+```{r}
+library("caTools")
+
+classifier_df <- read.csv("binary-classifier-data.csv")
+head(classifier_df)
+summary(classifier_df)
+
+split<-sample.split(classifier_df, SplitRatio=0.8)
+split
+
+train <- subset(classifier_df, split="TRUE")
+test <- subset(classifier_df, split="FALSE")
+
+logistic_model<-glm(label ~  x + y, data = train, family = "binomial")
+summary(logistic_model)
+ 
+result <- predict(logistic_model, test, type="response")
+
+
+result <- predict(logistic_model, train, type="response")
+
+
+
+confusion_matrix <- table(Actual_Value=train$label, Predicted_Value= result >0.5)
+confusion_matrix
+
+#Accuracy calculation based on confusion matrix
+
+(confusion_matrix[[1,1]] + confusion_matrix[[2,2]])/sum(confusion_matrix)
+
+
+```
+
+**Answer** - Logistic regression is showing accuracy of 58%.
+
+**b. How does the accuracy of the logistic regression classifier compare to the nearest neighbors algorithm?**
+
+```{r}
+
+#KNN implementation
+library("class")
+#The value of K is decided as square root of number of observations 
+sqrt(nrow(train))
+
+# Based on above value we get K = 38 or K = 39 (if we round to nearest integer)
+
+knn.38 <- knn(train=train, test=test, cl=train$label, k=38 )
+knn.39 <- knn(train=train, test=test, cl=train$label, k=39 )
+
+
+accuracy.38 <- 100 * sum(test$label == knn.38)/nrow(test)
+
+accuracy.38
+
+accuracy.39 <- 100 * sum(test$label == knn.39)/nrow(test)
+
+accuracy.39
+
+table(knn.38, test$label)
+
+table(knn.39, test$label)
+
+library("caret")
+
+confusionMatrix(table(knn.39, test$label))
+
+```
+
+**Answer** - KNN is showing accuracy of 97% much higher than logistic regression.
+
+**c. Why is the accuracy of the logistic regression classifier different from that of the nearest neighbors?**
+
+**Answer:**
+
+The KNN model is showing higher accuracy than logistic regression. The reason behind this difference is because KNN is non parametric model and logistic regression is parametric model. Hence KNN tries to predict binary result by indicating outcome as 0 or 1.  However LR tries to find the probability of outcome so that the values lie between 0 and 1.  
+
+
+
+
