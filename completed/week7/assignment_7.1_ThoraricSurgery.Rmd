@@ -1,7 +1,7 @@
 ---
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```yaml
@@ -51,36 +51,48 @@ exp(confint(regression_all_variables))
 
 exp(regression_all_variables$coefficients)
 
+
+regression_selected_variables<-glm(Risk1Yr ~  DGN + PRE5 + PRE9 + PRE11 + PRE14+ PRE17 + PRE30, data = train, family = "binomial")
+summary(regression_selected_variables)
+
 ```
 
 
 **b.** According to the summary, which variables had the greatest effect on the survival rate?
 
 **Answer**
-As per the summary of the model and the coefficients, PRE9 has highest P-value with positive correlation and we can say PRE9 is having highest impact on the model.
+As per the summary of the model and the coefficients, PRE9 has highest P-value with positive correlation and we can say PRE9 is having highest impact on the model. Also when reduced variables to the selected variables which are more impactful than others the model also shows reduced AIC which means improved fit. (A larger value of the AIC indicates worse fit (Ref. - Discovering Statistics Using R  [@field2012discovering page 388] ))
 
 
 
 **c.** To compute the accuracy of your model, use the dataset to predict the outcome variable. The percent of correct predictions is the accuracy of your model. What is the accuracy of your model?
 
 ```{r}
+#Calculating accuracy for model with all variables
 result <- predict(regression_all_variables, test, type="response")
-
-
 result <- predict(regression_all_variables, train, type="response")
-
 
 confusion_matrix <- table(Actual_Value=train$Risk1Yr, Predicted_Value= result >0.5)
 confusion_matrix
 
+#Accuracy calculation based on confusion matrix
+accuracy = (confusion_matrix[[1,1]] + confusion_matrix[[2,2]])/sum(confusion_matrix) * 100
+accuracy
+
+
+#Calculating accuracy for the 
+
+result <- predict(regression_selected_variables, test, type="response")
+result <- predict(regression_selected_variables, train, type="response")
+
+confusion_matrix <- table(Actual_Value=train$Risk1Yr, Predicted_Value= result >0.5)
+confusion_matrix
 
 #Accuracy calculation based on confusion matrix
-
 accuracy = (confusion_matrix[[1,1]] + confusion_matrix[[2,2]])/sum(confusion_matrix) * 100
-
 accuracy
 ```
 
 
 **Answer:**
-According to the confusion matrix and accuracy calculation shown above we can say our model is ~ 84% accurate. 
+According to the confusion matrix and accuracy calculation for both the models we can say the best fit model has increased model accuracy by 84.26 - 83.62 = 0.64%. 

@@ -366,15 +366,13 @@ summary {
 
 
 <pre class="yaml"><code>---
-title: &quot;ASSIGNMENT 6.1_Housing_Data&quot;
+title: &quot;ASSIGNMENT 7.2_BinaryClassifier&quot;
 author: &quot;Bhushan Suryawanshi&quot;
-date: &#39;2020-07-06&#39;
+date: &#39;2020-07-14&#39;
 
 ---</code></pre>
 <p>Fit a logistic regression model to the binary-classifier-data.csv dataset from the previous assignment.</p>
-<ol style="list-style-type: lower-alpha">
-<li>What is the accuracy of the logistic regression classifier?</li>
-</ol>
+<p><strong>a. What is the accuracy of the logistic regression classifier?</strong></p>
 <pre class="r"><code>library(&quot;caTools&quot;)</code></pre>
 <pre><code>## Warning: package &#39;caTools&#39; was built under R version 4.0.2</code></pre>
 <pre class="r"><code>classifier_df &lt;- read.csv(&quot;binary-classifier-data.csv&quot;)
@@ -396,7 +394,7 @@ head(classifier_df)</code></pre>
 ##  Max.   :1.000   Max.   :104.58   Max.   :106.896</code></pre>
 <pre class="r"><code>split&lt;-sample.split(classifier_df, SplitRatio=0.8)
 split</code></pre>
-<pre><code>## [1]  TRUE  TRUE FALSE</code></pre>
+<pre><code>## [1]  TRUE FALSE  TRUE</code></pre>
 <pre class="r"><code>train &lt;- subset(classifier_df, split=&quot;TRUE&quot;)
 test &lt;- subset(classifier_df, split=&quot;FALSE&quot;)
 
@@ -442,9 +440,8 @@ confusion_matrix</code></pre>
 
 (confusion_matrix[[1,1]] + confusion_matrix[[2,2]])/sum(confusion_matrix)</code></pre>
 <pre><code>## [1] 0.5834446</code></pre>
-<ol start="2" style="list-style-type: lower-alpha">
-<li>How does the accuracy of the logistic regression classifier compare to the nearest neighbors algorithm?</li>
-</ol>
+<p><strong>Answer</strong> - Logistic regression is showing accuracy of 58%.</p>
+<p><strong>b. How does the accuracy of the logistic regression classifier compare to the nearest neighbors algorithm?</strong></p>
 <pre class="r"><code>#KNN implementation
 library(&quot;class&quot;)</code></pre>
 <pre><code>## Warning: package &#39;class&#39; was built under R version 4.0.2</code></pre>
@@ -460,7 +457,7 @@ knn.39 &lt;- knn(train=train, test=test, cl=train$label, k=39 )
 accuracy.38 &lt;- 100 * sum(test$label == knn.38)/nrow(test)
 
 accuracy.38</code></pre>
-<pre><code>## [1] 97.39653</code></pre>
+<pre><code>## [1] 97.46328</code></pre>
 <pre class="r"><code>accuracy.39 &lt;- 100 * sum(test$label == knn.39)/nrow(test)
 
 accuracy.39</code></pre>
@@ -468,8 +465,8 @@ accuracy.39</code></pre>
 <pre class="r"><code>table(knn.38, test$label)</code></pre>
 <pre><code>##       
 ## knn.38   0   1
-##      0 746  18
-##      1  21 713</code></pre>
+##      0 747  18
+##      1  20 713</code></pre>
 <pre class="r"><code>table(knn.39, test$label)</code></pre>
 <pre><code>##       
 ## knn.39   0   1
@@ -507,9 +504,22 @@ accuracy.39</code></pre>
 ##                                           
 ##        &#39;Positive&#39; Class : 0               
 ## </code></pre>
-<ol start="3" style="list-style-type: lower-alpha">
-<li>Why is the accuracy of the logistic regression classifier different from that of the nearest neighbors?</li>
-</ol>
+<pre class="r"><code>anova(logistic_model, knn.38)</code></pre>
+<pre><code>## Analysis of Deviance Table
+## 
+## Model: binomial, link: logit
+## 
+## Response: label
+## 
+## Terms added sequentially (first to last)
+## 
+## 
+##      Df Deviance Resid. Df Resid. Dev
+## NULL                  1497     2075.8
+## x     1   5.4072      1496     2070.4
+## y     1  18.3293      1495     2052.1</code></pre>
+<p><strong>Answer</strong> - KNN is showing accuracy of 97% much higher than logistic regression.</p>
+<p><strong>c. Why is the accuracy of the logistic regression classifier different from that of the nearest neighbors?</strong></p>
 <p><strong>Answer:</strong></p>
 <p>The KNN model is showing higher accuracy than logistic regression. The reason behind this difference is because KNN is non parametric model and logistic regression is parametric model. Hence KNN tries to predict binary result by indicating outcome as 0 or 1. However LR tries to find the probability of outcome so that the values lie between 0 and 1.</p>
 

@@ -415,8 +415,8 @@ head(thoracic_surgery_df)</code></pre>
 <pre><code>## Warning: package &#39;caTools&#39; was built under R version 4.0.2</code></pre>
 <pre class="r"><code>split&lt;-sample.split(thoracic_surgery_df, SplitRatio=0.8)
 split</code></pre>
-<pre><code>##  [1]  TRUE  TRUE FALSE  TRUE  TRUE FALSE  TRUE  TRUE  TRUE FALSE  TRUE  TRUE
-## [13] FALSE  TRUE  TRUE  TRUE  TRUE</code></pre>
+<pre><code>##  [1] FALSE FALSE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE
+## [13]  TRUE  TRUE  TRUE FALSE  TRUE</code></pre>
 <pre class="r"><code>train &lt;- subset(thoracic_surgery_df, split=&quot;TRUE&quot;)
 test &lt;- subset(thoracic_surgery_df, split=&quot;FALSE&quot;)
 
@@ -785,14 +785,50 @@ summary(regression_all_variables)</code></pre>
 ## 1.675616e+00 2.525890e+00 4.317676e-07 9.067446e-01 2.956473e+00 8.455364e-07 
 ##          AGE 
 ## 9.905394e-01</code></pre>
+<pre class="r"><code>regression_selected_variables&lt;-glm(Risk1Yr ~  DGN + PRE5 + PRE9 + PRE11 + PRE14+ PRE17 + PRE30, data = train, family = &quot;binomial&quot;)
+summary(regression_selected_variables)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = Risk1Yr ~ DGN + PRE5 + PRE9 + PRE11 + PRE14 + PRE17 + 
+##     PRE30, family = &quot;binomial&quot;, data = train)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.4667  -0.5583  -0.4617  -0.2863   2.5340  
+## 
+## Coefficients:
+##               Estimate Std. Error z value Pr(&gt;|z|)   
+## (Intercept)  -17.05284 1455.39766  -0.012  0.99065   
+## DGNDGN2       13.98984 1455.39759   0.010  0.99233   
+## DGNDGN3       13.47962 1455.39755   0.009  0.99261   
+## DGNDGN4       13.82213 1455.39761   0.009  0.99242   
+## DGNDGN5       15.63840 1455.39766   0.011  0.99143   
+## DGNDGN6        0.45620 1623.40830   0.000  0.99978   
+## DGNDGN8       16.91476 1455.39832   0.012  0.99073   
+## PRE5          -0.02428    0.01731  -1.403  0.16059   
+## PRE9T          1.35551    0.46854   2.893  0.00382 **
+## PRE11T         0.50303    0.33762   1.490  0.13624   
+## PRE14OC12      0.45340    0.32471   1.396  0.16261   
+## PRE14OC13      1.31605    0.60232   2.185  0.02889 * 
+## PRE14OC14      1.77128    0.59355   2.984  0.00284 **
+## PRE17T         0.98455    0.43089   2.285  0.02232 * 
+## PRE30T         1.10136    0.49490   2.225  0.02605 * 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 395.61  on 469  degrees of freedom
+## Residual deviance: 346.61  on 455  degrees of freedom
+## AIC: 376.61
+## 
+## Number of Fisher Scoring iterations: 14</code></pre>
 <p><strong>b.</strong> According to the summary, which variables had the greatest effect on the survival rate?</p>
-<p><strong>Answer</strong> As per the summary of the model and the coefficients, PRE9 has highest P-value with positive correlation and we can say PRE9 is having highest impact on the model.</p>
+<p><strong>Answer</strong> As per the summary of the model and the coefficients, PRE9 has highest P-value with positive correlation and we can say PRE9 is having highest impact on the model. Also when reduced variables to the selected variables which are more impactful than others the model also shows reduced AIC which means improved fit. (A larger value of the AIC indicates worse fit (Ref. - Discovering Statistics Using R <span class="citation">[@field2012discovering page 388]</span> ))</p>
 <p><strong>c.</strong> To compute the accuracy of your model, use the dataset to predict the outcome variable. The percent of correct predictions is the accuracy of your model. What is the accuracy of your model?</p>
-<pre class="r"><code>result &lt;- predict(regression_all_variables, test, type=&quot;response&quot;)
-
-
+<pre class="r"><code>#Calculating accuracy for model with all variables
+result &lt;- predict(regression_all_variables, test, type=&quot;response&quot;)
 result &lt;- predict(regression_all_variables, train, type=&quot;response&quot;)
-
 
 confusion_matrix &lt;- table(Actual_Value=train$Risk1Yr, Predicted_Value= result &gt;0.5)
 confusion_matrix</code></pre>
@@ -801,12 +837,25 @@ confusion_matrix</code></pre>
 ##            F   390   10
 ##            T    67    3</code></pre>
 <pre class="r"><code>#Accuracy calculation based on confusion matrix
-
 accuracy = (confusion_matrix[[1,1]] + confusion_matrix[[2,2]])/sum(confusion_matrix) * 100
-
 accuracy</code></pre>
 <pre><code>## [1] 83.61702</code></pre>
-<p><strong>Answer:</strong> According to the confusion matrix and accuracy calculation shown above we can say our model is ~ 84% accurate.</p>
+<pre class="r"><code>#Calculating accuracy for the 
+
+result &lt;- predict(regression_selected_variables, test, type=&quot;response&quot;)
+result &lt;- predict(regression_selected_variables, train, type=&quot;response&quot;)
+
+confusion_matrix &lt;- table(Actual_Value=train$Risk1Yr, Predicted_Value= result &gt;0.5)
+confusion_matrix</code></pre>
+<pre><code>##             Predicted_Value
+## Actual_Value FALSE TRUE
+##            F   390   10
+##            T    64    6</code></pre>
+<pre class="r"><code>#Accuracy calculation based on confusion matrix
+accuracy = (confusion_matrix[[1,1]] + confusion_matrix[[2,2]])/sum(confusion_matrix) * 100
+accuracy</code></pre>
+<pre><code>## [1] 84.25532</code></pre>
+<p><strong>Answer:</strong> According to the confusion matrix and accuracy calculation for both the models we can say the best fit model has increased model accuracy by 84.26 - 83.62 = 0.64%.</p>
 
 
 

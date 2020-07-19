@@ -1,14 +1,15 @@
 ---
 output:
   html_document: default
+  pdf_document: default
 bibliography: bibliography.bib
 ---
 
 ```yaml
 ---
-title: "ASSIGNMENT 6.1_Housing_Data"
+title: "ASSIGNMENT 7.2_BinaryClassifier"
 author: "Bhushan Suryawanshi"
-date: '2020-07-06'
+date: '2020-07-14'
 
 ---
 ```
@@ -84,6 +85,8 @@ table(knn.39, test$label)
 library("caret")
 
 confusionMatrix(table(knn.39, test$label))
+
+anova(logistic_model, knn.38)
 
 ```
 
